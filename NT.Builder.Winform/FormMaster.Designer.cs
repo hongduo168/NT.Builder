@@ -31,13 +31,15 @@
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.menu1 = new System.Windows.Forms.ToolStripMenuItem();
             this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
+            this.menu2 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip
             // 
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menu1});
+            this.menu1,
+            this.menu2});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Size = new System.Drawing.Size(884, 25);
@@ -46,9 +48,15 @@
             // menu1
             // 
             this.menu1.Name = "menu1";
-            this.menu1.Size = new System.Drawing.Size(82, 21);
-            this.menu1.Text = "生成Model";
+            this.menu1.Size = new System.Drawing.Size(58, 21);
+            this.menu1.Text = "Model";
             this.menu1.Click += new System.EventHandler(this.menu1_Click);
+            // 
+            // menu2
+            // 
+            this.menu2.Name = "menu2";
+            this.menu2.Size = new System.Drawing.Size(92, 21);
+            this.menu2.Text = "ServiceStack";
             // 
             // MasterForm
             // 
@@ -78,6 +86,7 @@
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem menu1;
         private System.ComponentModel.BackgroundWorker backgroundWorker1;
+        private System.Windows.Forms.ToolStripMenuItem menu2;
     }
 }
 

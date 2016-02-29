@@ -1,9 +1,11 @@
 ﻿using NT.Builder.DbHelper;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -14,8 +16,11 @@ namespace NT.Builder.Winform
 {
     public partial class FormBuilder : Form
     {
+        private const string PROPERTYCODE = "        public virtual {1} {0} {{ get; set; }}";
         private DbUtility db = null;
         private DataTable tables;
+        private string namespaceText = string.Empty;
+        private string classbaseText = string.Empty;
         public FormBuilder()
         {
             InitializeComponent();
@@ -141,10 +146,15 @@ namespace NT.Builder.Winform
             var dialog = folderBrowserDialog1.ShowDialog();
             if (dialog == DialogResult.OK)
             {
+                List<int> s = new List<int>();
+                for (int i = 0; i < listBox1.SelectedIndices.Count; i++)
+                {
+                    s.Add(listBox1.SelectedIndices[i]);
+                }
+                namespaceText = textBox6.Text.Trim();
+                classbaseText = textBox5.Text.Trim();
 
-
-
-                backgroundWorker1.RunWorkerAsync();
+                backgroundWorker1.RunWorkerAsync(s);
                 progressBar1.Visible = true;
                 button2.Enabled = button3.Enabled = button4.Enabled = button5.Enabled = button6.Enabled = false;
             }
@@ -152,7 +162,27 @@ namespace NT.Builder.Winform
 
         private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
         {
-            Thread.Sleep(5000);
+            foreach (var item in (List<int>)e.Argument)
+            {
+                var name = tables.Rows[item]["name"].ToString();
+                DataTable dt = db.TableInfo(name);
+
+                string fileName = string.Format("{0}Info", name);
+                StringBuilder fileText = new StringBuilder();
+
+                fileText.AppendFormat("namespace {0}", namespaceText).AppendLine();
+                fileText.AppendLine("{");
+                fileText.AppendFormat("    public partial class {0} : {1}", fileName, string.IsNullOrEmpty(classbaseText) ? "ModelBase" : classbaseText).AppendLine();
+                fileText.AppendLine("    {");
+                foreach (DataColumn column in dt.Columns)
+                {
+                    fileText.AppendFormat(PROPERTYCODE, column.ColumnName, column.DataType.Name).AppendLine();
+                }
+                fileText.AppendLine("    }");
+                fileText.AppendLine("}");
+
+                File.WriteAllText(Path.Combine(folderBrowserDialog1.SelectedPath, fileName + ".cs"), fileText.ToString());
+            }
         }
 
         private void backgroundWorker1_ProgressChanged(object sender, ProgressChangedEventArgs e)
